@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VhAT — Moms på autopilot</title>
+    <meta name="description"
+        content="VhAT automatiserer moms-kontrol for virksomheder og revisorer. Fang fejl og glemte fradrag før indberetning." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="icon"
+        href="https://cdn.prod.website-files.com/6732ace4b1bfa6a1b35086a3/67443076cb5b14e9b26d15c4_Webclip_logo_small.jpg"
+        type="image/jpeg" />
+    <link rel="apple-touch-icon"
+        href="https://cdn.prod.website-files.com/6732ace4b1bfa6a1b35086a3/67443076cb5b14e9b26d15c4_Webclip_logo_small.jpg" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="floating-model" id="floating-model" aria-hidden="true">
+        <canvas id="floating-model-canvas"></canvas>
+    </div>
+
+    <header class="site-header" id="site-header">
+        <div class="nav-inner">
+            <a href="#" class="logo" aria-label="VhAT home">
+                <img src="https://cdn.prod.website-files.com/6732ace4b1bfa6a1b35086a3/697cb4f2f515886fce58164c_VhAT-logo-dark.png"
+                    alt="VhAT" class="logo-img" width="110" height="32" />
+            </a>
+
+            <nav class="nav-links" aria-label="Primary">
+                <a href="#how-it-works" data-i18n="nav.how">Sådan virker det</a>
+                <a href="#audience" data-i18n="nav.audience">Til dig</a>
+                <a href="#pricing" data-i18n="nav.pricing">Priser</a>
+                <a href="#founders" data-i18n="nav.about">Om os</a>
+            </nav>
+
+            <div class="nav-actions">
+                <div class="lang-switch" role="group" aria-label="Language">
+                    <button type="button" class="lang-btn is-active" data-lang="da" aria-pressed="true">DA</button>
+                    <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+                </div>
+                <a href="#pricing" class="btn btn-ghost" data-i18n="nav.login">Log ind</a>
+                <a href="#pricing" class="btn btn-primary" data-i18n="nav.cta">Start gratis prøve</a>
+            </div>
+
+            <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobile-menu" hidden>
+        <nav>
+            <a href="#how-it-works" data-i18n="nav.how">Sådan virker det</a>
+            <a href="#audience" data-i18n="nav.audience">Til dig</a>
+            <a href="#pricing" data-i18n="nav.pricing">Priser</a>
+            <a href="#founders" data-i18n="nav.about">Om os</a>
+            <div class="lang-switch mobile-lang" role="group" aria-label="Language">
+                <button type="button" class="lang-btn is-active" data-lang="da" aria-pressed="true">DA</button>
+                <button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+            </div>
+            <a href="#pricing" class="btn btn-primary" data-i18n="nav.cta">Start gratis prøve</a>
+        </nav>
+    </div>
+
+    <main>
+
+        <section class="hero" id="hero">
+            <div class="hero-blobs" aria-hidden="true">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+                <div class="blob blob-3"></div>
+            </div>
+
+            <div class="hero-frame">
+                <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <span class="badge-dot"></span>
+                        <span data-i18n="hero.badge">Moms på autopilot</span>
+                    </div>
+
+                    <h1 class="hero-title">
+                        <span data-i18n="hero.title1">Få momsen rigtig</span><br />
+                        <span class="text-accent" data-i18n="hero.title2">før du indberetter</span>
+                    </h1>
+
+                    <p class="hero-sub" data-i18n="hero.sub">
+                        VhAT scanner automatisk alle dine posteringer, finder fejl og glemte fradrag,
+                        og retter dem med ét klik i e-conomic. Ro i maven — uden manuel spot-check.
+                    </p>
+
+                    <div class="hero-ctas">
+                        <a href="#pricing" class="btn btn-primary btn-lg">
+                            <span data-i18n="hero.cta1">Start 14 dages gratis prøve</span>
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                        <a href="#how-it-works" class="btn btn-ghost btn-lg" data-i18n="hero.cta2">Se hvordan det
+                            virker</a>
+                    </div>
+
+                    <div class="hero-trust">
+                        <span>Certified e-conomic partner</span>
+                        <span class="dot">·</span>
+                        <span>Azure</span>
+                        <span class="dot">·</span>
+                        <span>GDPR</span>
+                        <span class="dot">·</span>
+                        <span>MitID</span>
+                    </div>
+                </div>
+
+                <div class="hero-device" aria-hidden="true">
+                    <div class="device-screen">
+                        <div class="device-header">
+                            <div class="device-dots"><span></span><span></span><span></span></div>
+                            <span class="device-title">VhAT · Momscheck</span>
+                        </div>
+                        <div class="device-body">
+                            <div class="scan-line"></div>
+                            <div class="tx-row ok">
+                                <span class="tx-icon">✓</span>
+                                <span class="tx-label">Køb · 12.450 DKK</span>
+                                <span class="tx-status">OK</span>
+                            </div>
+                            <div class="tx-row fix">
+                                <span class="tx-icon">!</span>
+                                <span class="tx-label">Salg · manglende moms</span>
+                                <span class="tx-status">Ret</span>
+                            </div>
+                            <div class="tx-row ok">
+                                <span class="tx-icon">✓</span>
+                                <span class="tx-label">Fradrag fundet</span>
+                                <span class="tx-status">+2.180</span>
+                            </div>
+                            <div class="tx-row ok">
+                                <span class="tx-icon">✓</span>
+                                <span class="tx-label">VIES valideret</span>
+                                <span class="tx-status">OK</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-transition" aria-hidden="true">
+                <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                    <path d="M0,0 C360,120 1080,120 1440,0 L1440,120 L0,120 Z" fill="var(--bg)"></path>
+                </svg>
+            </div>
+        </section>
+
+        <section class="video-expand" id="video-expand">
+            <div class="video-expand__pin">
+                <div class="video-expand__frame">
+                    <div class="video-expand__inner">
+                        <iframe id="vhat-video"
+                            src="https://player.cloudinary.com/embed/?cloud_name=da499tjru&public_id=NY_-_VhAT_p%C3%A5_6_min._wsc8xr&player[controls]=true&player[muted]=false&player[autoplay]=false"
+                            allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen
+                            frameborder="0" title="VhAT på 6 min."></iframe>
+                        <button type="button" class="video-expand__play" id="videoPlayBtn" aria-label="Play video">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="stats" id="stats">
+            <div class="section-inner">
+                <p class="eyebrow" data-i18n="stats.eyebrow">Why VhAT exists</p>
+                <h2 class="section-title" data-i18n="stats.title">Denmark has a moms problem.</h2>
+                <p class="section-lede" data-i18n="stats.lede">
+                    Skattestyrelsen's own nationwide review found errors hiding in most VAT
+                    filings — small mistakes and large ones, in both directions.
+                </p>
+
+                <div class="stats__grid">
+                    <div class="stat-card">
+                        <span class="stat-card__number" data-count="2" data-suffix=" / 3">0</span>
+                        <span class="stat-card__label" data-i18n="stats.s1">VAT filings contain an error</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__number" data-count="22" data-suffix="%">0</span>
+                        <span class="stat-card__label" data-i18n="stats.s2">of Denmark's tax revenue is VAT</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__number" data-count="16" data-suffix="%">0</span>
+                        <span class="stat-card__label" data-i18n="stats.s3">of businesses missed the deadline</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card__number" data-count="5" data-suffix=".0%">0</span>
+                        <span class="stat-card__label" data-i18n="stats.s4">Denmark's VAT gap — among Europe's
+                            highest</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="audience" id="audience">
+            <div class="section-inner">
+                <p class="eyebrow" data-i18n="aud.eyebrow">Built for two kinds of work</p>
+                <h2 class="section-title" data-i18n="aud.title">Who's checking the moms today?</h2>
+
+                <div class="audience__grid">
+                    <article class="audience-card">
+                        <span class="audience-card__tag" data-i18n="aud.b.tag">For businesses</span>
+                        <h3 data-i18n="aud.b.title">Check your own VAT before you file</h3>
+                        <p data-i18n="aud.b.body">
+                            Connect your accounting software, run a full VAT check in minutes, and
+                            fix what's wrong directly — no spreadsheets, no guesswork.
+                        </p>
+                        <a href="#pricing" class="link-arrow" data-i18n="aud.b.cta">See business pricing</a>
+                    </article>
+
+                    <article class="audience-card audience-card--dark">
+                        <span class="audience-card__tag" data-i18n="aud.a.tag">For accountants &amp; bookkeepers</span>
+                        <h3 data-i18n="aud.a.title">Standardize VAT quality across every client</h3>
+                        <p data-i18n="aud.a.body" id="audience-card__tag_p2">
+                            Review whole client portfolios at once, cut manual spot-checks, and
+                            deliver consistent, documented quality — at scale.
+                        </p>
+                        <a href="#pricing" class="link-arrow" data-i18n="aud.a.cta">Book a partner demo</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="how" id="how-it-works">
+            <div class="section-inner">
+                <p class="eyebrow" data-i18n="how.eyebrow">How it works</p>
+                <h2 class="section-title" data-i18n="how.title">Three steps to a clean VAT return.</h2>
+
+                <div class="how__path">
+                    <svg class="how__line" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+                        <path id="howPath" d="M 80 60 C 500 60, 100 300, 500 300 C 900 300, 500 540, 920 540"
+                            fill="none" />
+                    </svg>
+
+                    <div class="how__step" data-step="1">
+                        <span class="how__step-num">01</span>
+                        <h3 data-i18n="how.s1.title">VhAT scans everything</h3>
+                        <p data-i18n="how.s1.body">Every purchase and sales transaction in your bookkeeping gets checked
+                            automatically — not just a sample.</p>
+                    </div>
+
+                    <div class="how__step" data-step="2">
+                        <span class="how__step-num">02</span>
+                        <h3 data-i18n="how.s2.title">You see what's wrong</h3>
+                        <p data-i18n="how.s2.body">A clear, understandable overview of corrections and any deductions
+                            you missed — no accounting jargon.</p>
+                    </div>
+
+                    <div class="how__step" data-step="3">
+                        <span class="how__step-num">03</span>
+                        <h3 data-i18n="how.s3.title">Fix it with one click</h3>
+                        <p data-i18n="how.s3.body">Push corrections straight back into e-conomic, or your accounting
+                            system of choice, instantly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section class="model-steps" id="features">
+            <div class="model-steps__sticky">
+                <div class="model-steps__layout">
+                    <div class="model-steps__copy">
+                        <p class="eyebrow" data-i18n="feat.eyebrow">Everything included</p>
+                        <h2 class="section-title" data-i18n="feat.title">One tool, the full VAT workflow.</h2>
+                        <div class="model-steps__list" id="features-steps">
+                            <article class="model-step is-active" data-step="0">
+                                <span class="model-step__num">01</span>
+                                <h3 data-i18n="feat.1.title">Automated transaction review</h3>
+                                <p data-i18n="feat.1.body">Every purchase and sale checked — not spot-checked.</p>
+                            </article>
+                            <article class="model-step" data-step="1">
+                                <span class="model-step__num">02</span>
+                                <h3 data-i18n="feat.2.title">e-conomic integration</h3>
+                                <p data-i18n="feat.2.body">Certified partner integration, plus manual upload support.
+                                </p>
+                            </article>
+                            <article class="model-step" data-step="2">
+                                <span class="model-step__num">03</span>
+                                <h3 data-i18n="feat.3.title">Audit trail</h3>
+                                <p data-i18n="feat.3.body">Every assessment and correction documented automatically.</p>
+                            </article>
+                            <article class="model-step" data-step="3">
+                                <span class="model-step__num">04</span>
+                                <h3 data-i18n="feat.4.title">EU VAT number check</h3>
+                                <p data-i18n="feat.4.body">Built-in VIES validation for cross-border transactions.</p>
+                            </article>
+                            <article class="model-step" data-step="4">
+                                <span class="model-step__num">05</span>
+                                <h3 data-i18n="feat.5.title">Split VAT handling</h3>
+                                <p data-i18n="feat.5.body">Partial deductions calculated correctly, automatically.</p>
+                            </article>
+                            <article class="model-step" data-step="5">
+                                <span class="model-step__num">06</span>
+                                <h3 data-i18n="feat.6.title">Team &amp; accountant access</h3>
+                                <p data-i18n="feat.6.body">Invite your accountant or your whole team, with permissions.
+                                </p>
+                            </article>
+                        </div>
+                    </div>
+                    <div class="model-steps__stage">
+                        <canvas id="features-canvas" aria-hidden="true"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="trust" id="trust">
+            <div class="section-inner">
+                <p class="eyebrow" data-i18n="trust.eyebrow">Security</p>
+                <h2 class="section-title" data-i18n="trust.title">We take good care of your data.</h2>
+
+                <div class="trust__grid">
+                    <article class="trust-card card-1">
+                        <span class="trust-card__num">0.1</span>
+                        <div class="trust-card__visual">
+                            <svg class="tech-lines" viewBox="0 0 280 140" fill="none">
+                                <path d="M 0,70 H 85 M 195,70 H 280" stroke="#8b5cf6" stroke-width="1.5"
+                                    opacity="0.15" />
+                                <path d="M 0,35 H 65 L 90,70 M 280,35 H 215 L 190,70" stroke="#8b5cf6" stroke-width="1"
+                                    opacity="0.1" />
+
+                                <path class="pulse-line pulse-left" d="M 0,70 H 85" stroke="#a855f7"
+                                    stroke-width="3.5" />
+                                <path class="pulse-line pulse-right" d="M 280,70 H 195" stroke="#a855f7"
+                                    stroke-width="3.5" />
+
+                                <circle cx="85" cy="70" r="3.5" fill="#7c3aed" class="node-dot" />
+                                <circle cx="195" cy="70" r="3.5" fill="#7c3aed" class="node-dot" />
+                            </svg>
+
+                            <div class="trust-card__badge">
+                                <div class="badge-glow"></div>
+                                <div class="trust-icon">
+                                    <svg viewBox="0 0 48 48" fill="none">
+                                        <path d="M14 32h22a8 8 0 0 0 0-16 11 11 0 0 0-21.2-3.2A7 7 0 0 0 14 32z"
+                                            stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 data-i18n="trust.1.title">Protected cloud</h3>
+                        <p data-i18n="trust.1.body">Hosted on Microsoft Azure — a leading cloud platform built for high
+                            security and stable uptime.</p>
+                    </article>
+
+                    <article class="trust-card card-2">
+                        <span class="trust-card__num">0.2</span>
+                        <div class="trust-card__visual">
+                            <svg class="tech-lines" viewBox="0 0 280 140" fill="none">
+                                <line x1="30" y1="20" x2="90" y2="70" stroke="#8b5cf6" stroke-width="1.5"
+                                    opacity="0.15" />
+                                <line x1="30" y1="120" x2="90" y2="70" stroke="#8b5cf6" stroke-width="1.5"
+                                    opacity="0.15" />
+                                <line x1="190" y1="70" x2="250" y2="20" stroke="#8b5cf6" stroke-width="1.5"
+                                    opacity="0.15" />
+                                <line x1="190" y1="70" x2="250" y2="120" stroke="#8b5cf6" stroke-width="1.5"
+                                    opacity="0.15" />
+
+                                <path class="pulse-line diag-1" d="M 30,20 L 90,70" stroke="#a855f7"
+                                    stroke-width="3.5" />
+                                <path class="pulse-line diag-1" d="M 190,70 L 250,120" stroke="#a855f7"
+                                    stroke-width="3.5" />
+
+                                <path class="pulse-line diag-2" d="M 30,120 L 90,70" stroke="#a855f7"
+                                    stroke-width="3.5" />
+                                <path class="pulse-line diag-2" d="M 190,70 L 250,20" stroke="#a855f7"
+                                    stroke-width="3.5" />
+
+                                <circle cx="90" cy="70" r="3.5" fill="#7c3aed" class="node-dot" />
+                                <circle cx="190" cy="70" r="3.5" fill="#7c3aed" class="node-dot" />
+                            </svg>
+
+                            <div class="trust-card__badge">
+                                <div class="badge-glow"></div>
+                                <div class="trust-icon">
+                                    <svg viewBox="0 0 48 48" fill="none">
+                                        <path d="M24 6l16 6v11c0 9.2-6.4 17.4-16 20-9.6-2.6-16-10.8-16-20V12l16-6z"
+                                            stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+                                        <path d="M17 24l5 5 10-11" stroke="currentColor" stroke-width="2.2"
+                                            stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 data-i18n="trust.2.title">GDPR compliant</h3>
+                        <p data-i18n="trust.2.body">We follow every rule around personal and sensitive data, without
+                            exception.</p>
+                    </article>
+
+                    <article class="trust-card card-3">
+                        <span class="trust-card__num">0.3</span>
+                        <div class="trust-card__visual">
+                            <svg class="tech-lines" viewBox="0 0 280 140" fill="none">
+                                <path d="M 0,70 H 85 M 195,70 H 280" stroke="#8b5cf6" stroke-width="1.5"
+                                    opacity="0.15" />
+                                <path d="M 0,105 H 65 L 90,70 M 280,105 H 215 L 190,70" stroke="#8b5cf6"
+                                    stroke-width="1" opacity="0.1" />
+
+                                <path class="pulse-line pulse-left" d="M 0,70 H 85" stroke="#a855f7"
+                                    stroke-width="3.5" />
+                                <path class="pulse-line pulse-right" d="M 280,70 H 195" stroke="#a855f7"
+                                    stroke-width="3.5" />
+
+                                <circle cx="85" cy="70" r="3.5" fill="#7c3aed" class="node-dot" />
+                                <circle cx="195" cy="70" r="3.5" fill="#7c3aed" class="node-dot" />
+                            </svg>
+
+                            <div class="trust-card__badge">
+                                <div class="badge-glow"></div>
+                                <div class="trust-icon">
+                                    <svg viewBox="0 0 48 48" fill="none">
+                                        <rect x="8" y="12" width="32" height="24" rx="4" stroke="currentColor"
+                                            stroke-width="2.2" />
+                                        <circle cx="18" cy="22" r="4" stroke="currentColor" stroke-width="2" />
+                                        <path d="M14 30h8M28 20h8M28 26h6" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 data-i18n="trust.3.title">MitID verification</h3>
+                        <p data-i18n="trust.3.body">Only verified users get access — secured by Denmark’s national
+                            digital ID.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="founders" id="founders">
+            <div class="section-inner">
+                <p class="eyebrow" data-i18n="found.eyebrow">Who built this</p>
+                <h2 class="section-title" data-i18n="found.title">60+ years of VAT experience, one autopilot.</h2>
+
+                <div class="founders__grid">
+                    <article class="founder-card">
+                        <div class="founder-card__photo" aria-hidden="true">TSJ</div>
+                        <h3>Thomas Svane Jensen</h3>
+                        <span class="founder-card__role" data-i18n="found.t.role">Director &amp; Co-Founder</span>
+                        <p data-i18n="found.t.body">25+ years in VAT. Former Partner and Head of Indirect Tax at
+                            Deloitte.</p>
+                    </article>
+
+                    <article class="founder-card">
+                        <div class="founder-card__photo" aria-hidden="true">CBJ</div>
+                        <h3>Claus Bohn Jespersen</h3>
+                        <span class="founder-card__role" data-i18n="found.c.role">CEO &amp; Co-Founder</span>
+                        <p data-i18n="found.c.body">20+ years in VAT. Most recently CEO at KPMG Acor Tax.</p>
+                    </article>
+                </div>
+
+                <p class="founders__note" data-i18n="found.note">Plus a full team of developers and VAT specialists
+                    behind every check.</p>
+            </div>
+        </section>
+
+
+        <section class="pricing" id="pricing">
+            <div class="section-inner">
+                <p class="eyebrow" data-i18n="price.eyebrow">Pricing</p>
+                <h2 class="section-title" data-i18n="price.title">A plan for every VAT workload.</h2>
+                <p class="section-lede" data-i18n="price.lede">14-day free trial. No card lock-in. Cancel anytime.</p>
+
+                <div class="pricing__grid">
+                    <div class="price-card">
+                        <div class="price-card__header">
+                            <h3>Premium</h3>
+                            <p class="price-card__desc">For those who need advanced functionality that provides full
+                                control.</p>
+                            <div class="price-card__amount">
+                                <span class="amount-val">249</span>
+                                <span class="amount-currency">DKK</span>
+                                <small>/month</small>
+                            </div>
+                            <div class="price-card__select-wrapper">
+                                <select class="price-card__select">
+                                    <option value="1000">Including 1,000 transactions/year</option>
+                                    <option value="2500">Including 2,500 transactions/year</option>
+                                    <option value="5000">Including 5,000 transactions/year</option>
+                                </select>
+                                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <ul class="price-card__features">
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT check of all purchase and sales transactions</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Overview of all bug fixes</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Reposting to e-conomic</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Support</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Auditor access</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Documentation for review</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>EU VAT number check</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Handling of cash journals</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Unlimited number of users</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Onboarding</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT refund in other EU countries</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT code setup</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Partial VAT deduction / split VAT</span></li>
+                        </ul>
+
+                        <a href="#" class="btn btn-card">Try for free for 14 days</a>
+                    </div>
+
+                    <div class="price-card price-card--featured">
+                        <span class="price-card__badge">Most popular</span>
+                        <div class="price-card__header">
+                            <h3>Plus</h3>
+                            <p class="price-card__desc">For those who need unlimited access to invoices and auditor
+                                access.</p>
+                            <div class="price-card__amount">
+                                <span class="amount-val">179</span>
+                                <span class="amount-currency">DKK</span>
+                                <small>/month</small>
+                            </div>
+                            <div class="price-card__select-wrapper">
+                                <select class="price-card__select">
+                                    <option value="1000">Including 1,000 transactions/year</option>
+                                    <option value="2500">Including 2,500 transactions/year</option>
+                                    <option value="5000">Including 5,000 transactions/year</option>
+                                </select>
+                                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <ul class="price-card__features">
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT check of all purchase and sales transactions</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Overview of all bug fixes</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Reposting to e-conomic</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Support</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Auditor access</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Documentation for review</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>EU VAT number check</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Handling of cash journals</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Unlimited number of users</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Onboarding</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT refund in other EU countries</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT code setup</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Partial VAT deduction / split VAT</span></li>
+                        </ul>
+
+                        <a href="#" class="btn btn-card btn-card--primary">Try for free for 14 days</a>
+                    </div>
+
+                    <div class="price-card">
+                        <div class="price-card__header">
+                            <h3>Basis</h3>
+                            <p class="price-card__desc">For those of you who want to save time with direct repostings
+                                and everything else.</p>
+                            <div class="price-card__amount">
+                                <span class="amount-val">129</span>
+                                <span class="amount-currency">DKK</span>
+                                <small>/month</small>
+                            </div>
+                            <div class="price-card__select-wrapper">
+                                <select class="price-card__select">
+                                    <option value="1000">Including 1,000 transactions/year</option>
+                                    <option value="2500">Including 2,500 transactions/year</option>
+                                    <option value="5000">Including 5,000 transactions/year</option>
+                                </select>
+                                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        <ul class="price-card__features">
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT check of all purchase and sales transactions</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Overview of all bug fixes</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Reposting to e-conomic</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Support</span></li>
+                            <li class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Documentation for review</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Auditor access</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>EU VAT number check</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Handling of cash journals</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Unlimited number of users</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Onboarding</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT refund in other EU countries</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>VAT code setup</span></li>
+                            <li class="disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <path d="M20 6L9 17l-5-5" />
+                                </svg><span>Partial VAT deduction / split VAT</span></li>
+                        </ul>
+
+                        <a href="#" class="btn btn-card">Try for free for 14 days</a>
+                    </div>
+                </div>
+
+                <p class="pricing__accountants">
+                    <span data-i18n="price.acc">Managing VAT for multiple clients?</span>
+                    <a href="#" class="link-arrow" data-i18n="price.acc.cta">Get tailored partner pricing</a>
+                </p>
+            </div>
+        </section>
+
+
+        <section class="final-cta">
+            <div class="section-inner">
+                <div class="final-cta__card">
+                    <h2 data-i18n="final.title">VhAT's not to like?</h2>
+                    <p data-i18n="final.sub">Book a demo, or just start your free trial — no card required.</p>
+                    <a href="#pricing" class="btn btn-primary btn-lg" data-i18n="final.cta">Try VhAT free for 14
+                        days</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <footer class="footer">
+        <div class="section-inner footer__inner">
+            <div class="footer__col">
+                <a href="#" class="logo" aria-label="VhAT home">
+                    <img src="https://cdn.prod.website-files.com/6732ace4b1bfa6a1b35086a3/697cb4f2f515886fce58164c_VhAT-logo-dark.png"
+                        alt="VhAT" class="logo-img logo-img--footer" width="100" height="28" />
+                </a>
+                <p>VhAT ApS<br>Tuborg Havnevej 18, st.<br>2900 Hellerup, Denmark<br>CVR 44340232</p>
+            </div>
+
+            <div class="footer__col">
+                <h4 data-i18n="foot.product">Product</h4>
+                <a href="#how-it-works" data-i18n="nav.how">How it works</a>
+                <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+                <a href="#audience" data-i18n="aud.b.tag">For businesses</a>
+                <a href="#audience" data-i18n="aud.a.tag">For accountants</a>
+            </div>
+
+            <div class="footer__col">
+                <h4 data-i18n="foot.company">Company</h4>
+                <a href="#founders" data-i18n="nav.about">About</a>
+                <a href="#">Blog</a>
+                <a href="#">Help center</a>
+                <a href="https://www.linkedin.com/company/vhatio" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+
+            <div class="footer__col">
+                <h4 data-i18n="foot.legal">Legal</h4>
+                <a href="#">Privacy policy</a>
+                <a href="#">Terms</a>
+            </div>
+        </div>
+        <p class="footer__copyright">© 2026 VhAT ApS. All rights reserved.</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
