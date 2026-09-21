@@ -258,7 +258,6 @@
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-pressed", String(active));
     });
-    updatePricing(document.getElementById("volumeSlider")?.value || 0);
   }
 
   const header = document.getElementById("site-header");
@@ -293,38 +292,6 @@
     );
   });
 
-  const volumeTiers = [
-    { label: "1,000", basis: 129, plus: 179, premium: 249 },
-    { label: "2,000", basis: 179, plus: 249, premium: 349 },
-    { label: "5,000", basis: 299, plus: 399, premium: 549 },
-    { label: "10,000", basis: 499, plus: 649, premium: 849 },
-    { label: "25,000", basis: 899, plus: 1099, premium: 1168 },
-  ];
-
-  function updatePricing(idx) {
-    const i = Math.min(
-      Math.max(parseInt(idx, 10) || 0, 0),
-      volumeTiers.length - 1,
-    );
-    const t = volumeTiers[i];
-    const label = document.getElementById("volumeLabel");
-    const basis = document.getElementById("priceBasis");
-    const plus = document.getElementById("pricePlus");
-    const prem = document.getElementById("pricePremium");
-    if (label)
-      label.textContent =
-        currentLang === "da" ? t.label + " posteringer" : t.label + " postings";
-    if (basis) basis.textContent = t.basis;
-    if (plus) plus.textContent = t.plus;
-    if (prem) prem.textContent = t.premium;
-  }
-
-  const slider = document.getElementById("volumeSlider");
-  if (slider) {
-    slider.addEventListener("input", (e) => updatePricing(e.target.value));
-    updatePricing(0);
-  }
-
   function animateCount(el) {
     const target = parseFloat(el.getAttribute("data-count")) || 0;
     const suffix = el.getAttribute("data-suffix") || "";
@@ -343,49 +310,168 @@
     requestAnimationFrame(frame);
   }
 
-  function initHowItWorks() {
-    const pathSvg = document.querySelector(".how__line");
-    const steps = document.querySelectorAll(".how__step");
-    if (!pathSvg || !steps.length) return;
-    if (prefersReducedMotion || isMobile()) {
-      pathSvg.classList.add("path-drawn");
-      steps.forEach((s) => s.classList.add("is-visible"));
-      return;
-    }
-    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-      pathSvg.classList.add("path-drawn");
-      steps.forEach((s) => s.classList.add("is-visible"));
-      return;
-    }
-    gsap.registerPlugin(ScrollTrigger);
-    ScrollTrigger.create({
-      trigger: ".how__path",
-      start: "top 70%",
-      once: true,
-      onEnter: () => {
-        pathSvg.classList.add("path-drawn");
-        steps.forEach((step, i) =>
-          setTimeout(() => step.classList.add("is-visible"), 200 + i * 280),
-        );
-      },
-    });
-  }
-
   function initStats() {
-    const cards = document.querySelectorAll(".stat-card__number");
-    if (!cards.length) return;
+    const consoleEl = document.querySelector(".stats-console");
+    if (!consoleEl) return;
+
+    const rings = consoleEl.querySelectorAll(".stat-gauge__progress");
+    const bars = consoleEl.querySelectorAll(".stat-gauge__bar-fill");
+    const numbers = consoleEl.querySelectorAll(".stat-card__number");
+
+    function drawGauges() {
+      rings.forEach((ring) => {
+        const p = parseFloat(ring.getAttribute("data-progress")) || 0;
+        ring.style.setProperty("--p", Math.round(p * 100));
+        ring.classList.add("is-drawn");
+      });
+      bars.forEach((bar) => {
+        const p = parseFloat(bar.getAttribute("data-progress")) || 0;
+        bar.style.setProperty("--p", Math.round(p * 100));
+        bar.classList.add("is-drawn");
+      });
+      numbers.forEach((n) => animateCount(n));
+    }
+
+    if (prefersReducedMotion) {
+      drawGauges();
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            animateCount(entry.target);
+            drawGauges();
             observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.4 },
+      { threshold: 0.35 },
     );
-    cards.forEach((c) => observer.observe(c));
+    observer.observe(consoleEl);
+  }
+
+  function initAudienceTilt() {
+    const cards = document.querySelectorAll("[data-tilt]");
+    if (!cards.length || prefersReducedMotion || isMobile()) return;
+    if (typeof gsap === "undefined") return;
+
+    cards.forEach((card) => {
+      const setRX = gsap.quickTo(card, "rotationX", {
+        duration: 0.45,
+        ease: "power3.out",
+      });
+      const setRY = gsap.quickTo(card, "rotationY", {
+        duration: 0.45,
+        ease: "power3.out",
+      });
+
+      card.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        setRX(-y * 8);
+        setRY(x * 10);
+      });
+
+      card.addEventListener("mouseleave", () => {
+        setRX(0);
+        setRY(0);
+      });
+    });
+  }
+
+  function initHowItWorks() {
+    const pathSvg = document.querySelector(".how__line");
+    const pathEl = document.getElementById("howPath");
+    const token = document.getElementById("howToken");
+    const steps = document.querySelectorAll(".how__step");
+    if (!pathSvg || !steps.length) return;
+
+    if (prefersReducedMotion || isMobile()) {
+      pathSvg.classList.add("path-drawn");
+      steps.forEach((s) => {
+        s.classList.add("is-visible", "is-active");
+      });
+      if (token) token.style.display = "none";
+      return;
+    }
+
+    if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+      pathSvg.classList.add("path-drawn");
+      steps.forEach((s) => s.classList.add("is-visible", "is-active"));
+      return;
+    }
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const pathLen = pathEl ? pathEl.getTotalLength() : 1200;
+    let pathDrawn = false;
+
+    ScrollTrigger.create({
+      trigger: ".how__path",
+      start: "top 75%",
+      end: "bottom 25%",
+      scrub: 0.6,
+      onEnter: () => {
+        if (!pathDrawn) {
+          pathSvg.classList.add("path-drawn");
+          pathDrawn = true;
+        }
+        if (token) token.classList.add("is-active");
+      },
+      onUpdate: (self) => {
+        const p = self.progress;
+        if (pathEl && token) {
+          const pt = pathEl.getPointAtLength(p * pathLen);
+          const svg = pathSvg;
+          const vb = svg.viewBox.baseVal;
+          const rect = svg.getBoundingClientRect();
+          const parent = svg.parentElement.getBoundingClientRect();
+          const sx = rect.width / vb.width;
+          const sy = rect.height / vb.height;
+          token.style.left = rect.left - parent.left + pt.x * sx + "px";
+          token.style.top = rect.top - parent.top + pt.y * sy + "px";
+        }
+
+        const thresholds = [0.08, 0.48, 0.88];
+        steps.forEach((step, i) => {
+          const active = p >= thresholds[i];
+          step.classList.toggle("is-visible", active);
+          step.classList.toggle(
+            "is-active",
+            active && (i === steps.length - 1 || p < thresholds[i + 1]),
+          );
+        });
+      },
+    });
+  }
+
+  function initFounders() {}
+
+  function initPricing() {
+    document.querySelectorAll(".price-card__select").forEach((select) => {
+      select.addEventListener("change", () => {
+        const card = select.closest(".price-card");
+        const valEl = card && card.querySelector(".amount-val");
+        if (!valEl) return;
+        const next = parseInt(select.value, 10) || 0;
+        if (prefersReducedMotion || typeof gsap === "undefined") {
+          valEl.textContent = String(next);
+          return;
+        }
+        const current = parseInt(valEl.textContent, 10) || 0;
+        const obj = { v: current };
+        gsap.to(obj, {
+          v: next,
+          duration: 0.55,
+          ease: "power2.out",
+          onUpdate: () => {
+            valEl.textContent = String(Math.round(obj.v));
+          },
+        });
+      });
+    });
   }
 
   function iconInvoiceCheck() {
@@ -457,7 +543,6 @@
     rim.position.set(-2, 1, 1.5);
     scene.add(rim);
 
-    // Reuse the same low-poly laptop used in the "features" morph model
     const geo = iconInvoiceCheck();
     const solidMat = new THREE.MeshStandardMaterial({
       color: 0x15112a,
@@ -474,7 +559,6 @@
     const wire = new THREE.Mesh(geo, wireMat);
     scene.add(mesh, wire);
 
-    // Glowing "screen" accent
     const glow = new THREE.Mesh(
       new THREE.PlaneGeometry(0.85, 0.5),
       new THREE.MeshBasicMaterial({
@@ -500,7 +584,6 @@
       renderer.render(scene, camera);
     })();
 
-    // Scroll-linked left/right sweep across the whole page
     if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
       gsap.registerPlugin(ScrollTrigger);
       const margin = size / 2 + 24;
@@ -514,7 +597,7 @@
           const p = self.progress;
           const minX = margin;
           const maxX = window.innerWidth - margin;
-          const sweep = Math.sin(p * Math.PI * 6); // 6 left-right passes over the page
+          const sweep = Math.sin(p * Math.PI * 6);
           const bob = Math.sin(p * Math.PI * 14) * 16;
           wrap.style.left = minX + (sweep * 0.5 + 0.5) * (maxX - minX) + "px";
           wrap.style.top = `calc(50% + ${bob}px)`;
@@ -635,6 +718,105 @@
       camera.aspect = nw / nh;
       camera.updateProjectionMatrix();
       renderer.setSize(nw, nh);
+    });
+  }
+
+  function initFinalCta3D() {
+    const canvas = document.getElementById("final-cta-canvas");
+    if (!canvas || prefersReducedMotion || isMobile()) {
+      if (canvas) canvas.style.display = "none";
+      return;
+    }
+    if (typeof THREE === "undefined") return;
+
+    const parent = canvas.parentElement;
+    const w = parent.clientWidth || 800;
+    const h = parent.clientHeight || 280;
+
+    const sc = new THREE.Scene();
+    const cam = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
+    cam.position.z = 5;
+
+    const rend = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+    });
+    rend.setSize(w, h);
+    rend.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    rend.setClearColor(0x000000, 0);
+
+    sc.add(new THREE.AmbientLight(0x8b5cf6, 0.3));
+    const pl = new THREE.PointLight(0xa78bfa, 0.9, 18);
+    pl.position.set(1, 1, 3);
+    sc.add(pl);
+
+    const localOrbs = [];
+    [
+      { r: 0.22, x: -2.4, y: 0.6, z: -1, color: 0x8b5cf6, speed: 0.35 },
+      { r: 0.14, x: 2.2, y: -0.5, z: 0.3, color: 0xa78bfa, speed: 0.5 },
+      { r: 0.1, x: 1.2, y: 0.9, z: -0.8, color: 0xc4b5fd, speed: 0.4 },
+      { r: 0.08, x: -1.4, y: -0.7, z: 0.6, color: 0x7c3aed, speed: 0.6 },
+    ].forEach((d) => {
+      const geo = new THREE.SphereGeometry(d.r, 24, 24);
+      const mat = new THREE.MeshStandardMaterial({
+        color: d.color,
+        transparent: true,
+        opacity: 0.55,
+        roughness: 0.3,
+        metalness: 0.35,
+        emissive: d.color,
+        emissiveIntensity: 0.2,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(d.x, d.y, d.z);
+      mesh.userData = {
+        baseY: d.y,
+        speed: d.speed,
+        phase: Math.random() * Math.PI * 2,
+      };
+      sc.add(mesh);
+      localOrbs.push(mesh);
+    });
+
+    const positions = new Float32Array(90);
+    for (let i = 0; i < 90; i++) positions[i] = (Math.random() - 0.5) * 8;
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const particles = new THREE.Points(
+      pGeo,
+      new THREE.PointsMaterial({
+        color: 0xa78bfa,
+        size: 0.035,
+        transparent: true,
+        opacity: 0.4,
+        sizeAttenuation: true,
+      }),
+    );
+    sc.add(particles);
+
+    const clock = new THREE.Clock();
+    (function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+      localOrbs.forEach((orb) => {
+        const { baseY, speed, phase } = orb.userData;
+        orb.position.y = baseY + Math.sin(t * speed + phase) * 0.18;
+      });
+      particles.rotation.y = t * 0.025;
+      rend.render(sc, cam);
+    })();
+
+    window.addEventListener("resize", () => {
+      if (isMobile()) {
+        canvas.style.display = "none";
+        return;
+      }
+      const nw = parent.clientWidth;
+      const nh = parent.clientHeight;
+      cam.aspect = nw / nh;
+      cam.updateProjectionMatrix();
+      rend.setSize(nw, nh);
     });
   }
 
@@ -923,14 +1105,61 @@
     return { morphTo: morphTo };
   }
 
-  // ---------------------------------------------------------------------
-  // Low-poly "product icon" geometry builders.
-  // Each icon is assembled from primitive BufferGeometries (box, sphere,
-  // cylinder, cone, torus), baked into world space, then merged into a
-  // single non-indexed BufferGeometry so it works with the existing
-  // particle-explosion morph in createModelScene() (which reads
-  // geometry.attributes.position directly).
-  // ---------------------------------------------------------------------
+  function createStaticIconScene(canvasId, geometry) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || typeof THREE === "undefined") return null;
+    if (prefersReducedMotion || isMobile()) {
+      canvas.style.display = "none";
+      return null;
+    }
+
+    const size = 140;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 20);
+    camera.position.set(0, 0.15, 4.5);
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+    });
+    renderer.setSize(size, size);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const d1 = new THREE.DirectionalLight(0xffffff, 0.85);
+    d1.position.set(2, 3, 3);
+    scene.add(d1);
+    const rim = new THREE.PointLight(0xa78bfa, 1.2, 8);
+    rim.position.set(-2, 1, 1.5);
+    scene.add(rim);
+
+    const solidMat = new THREE.MeshStandardMaterial({
+      color: 0x1a1a1a,
+      roughness: 0.32,
+      metalness: 0.65,
+    });
+    const wireMat = new THREE.MeshBasicMaterial({
+      color: 0xa855f7,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.3,
+    });
+    const mesh = new THREE.Mesh(geometry, solidMat);
+    const wire = new THREE.Mesh(geometry, wireMat);
+    scene.add(mesh, wire);
+
+    (function loop() {
+      requestAnimationFrame(loop);
+      mesh.rotation.y += 0.008;
+      mesh.rotation.x = Math.sin(mesh.rotation.y * 0.5) * 0.12;
+      wire.rotation.copy(mesh.rotation);
+      renderer.render(scene, camera);
+    })();
+
+    return true;
+  }
 
   function placeGeo(geometry, opts) {
     opts = opts || {};
@@ -990,7 +1219,6 @@
     });
   }
 
-  // 01 — Automated transaction review: an open laptop
   function iconLaptop() {
     const base = placeGeo(new THREE.BoxGeometry(1.5, 0.09, 0.95), {
       position: [0, -0.5, 0.2],
@@ -1005,7 +1233,6 @@
     return buildIcon([base, screen]);
   }
 
-  // 02 — e-conomic integration: two interlocked rings
   function iconLink() {
     const ringA = placeGeo(new THREE.TorusGeometry(0.5, 0.14, 12, 28), {
       position: [-0.32, 0, 0],
@@ -1017,7 +1244,6 @@
     return buildIcon([ringA, ringB]);
   }
 
-  // 03 — Audit trail: a document with text lines and a checkmark
   function iconDocument() {
     const page = placeGeo(new THREE.BoxGeometry(0.9, 1.15, 0.06), {
       rotation: [0, 0, -0.06],
@@ -1041,7 +1267,6 @@
     return buildIcon([page, line1, line2, checkShort, checkLong]);
   }
 
-  // 04 — EU VAT number check: a globe with orbit rings and a location pin
   function iconGlobe() {
     const sphere = placeGeo(new THREE.SphereGeometry(0.78, 22, 16), {});
     const ring = placeGeo(new THREE.TorusGeometry(0.82, 0.025, 8, 40), {
@@ -1066,7 +1291,6 @@
     return buildIcon([sphere, ring, ring2, stem, ball]);
   }
 
-  // 05 — Split VAT handling: a pie disc split into two exploded wedges
   function iconSplit() {
     const gap = 0.14;
 
@@ -1101,7 +1325,6 @@
     return buildIcon([wedgeAplaced, wedgeBplaced]);
   }
 
-  // 06 — Team & accountant access: three linked "people" nodes
   function iconTeam() {
     const p1 = new THREE.Vector3(0, 0.58, 0);
     const p2 = new THREE.Vector3(-0.52, -0.4, 0.1);
@@ -1121,9 +1344,6 @@
     return buildIcon([s1, s2, s3, l1, l2, l3]);
   }
 
-  // Trust section icons -----------------------------------------------
-
-  // Protected cloud
   function iconCloud() {
     const s = (r, x, y, z) =>
       placeGeo(new THREE.SphereGeometry(r, 14, 14), { position: [x, y, z] });
@@ -1137,7 +1357,6 @@
     return buildIcon(parts);
   }
 
-  // GDPR shield with checkmark
   function iconShield() {
     const top = placeGeo(
       new THREE.CylinderGeometry(0.55, 0.55, 0.16, 16, 1, false, 0, Math.PI),
@@ -1158,7 +1377,6 @@
     return buildIcon([top, bottom, checkA, checkB]);
   }
 
-  // MitID verification: an ID card with photo, lines, and a badge
   function iconID() {
     const card = placeGeo(new THREE.BoxGeometry(1.3, 0.85, 0.06), {});
     const photo = placeGeo(new THREE.BoxGeometry(0.4, 0.5, 0.03), {
@@ -1188,10 +1406,7 @@
       iconTeam(),
     ];
 
-    const trustGeos = [iconCloud(), iconShield(), iconID()];
-
     const featScene = createModelScene("features-canvas", featureGeos);
-    const trustScene = createModelScene("trust-canvas", trustGeos);
 
     function wireSteps(listId, sceneApi) {
       const list = document.getElementById(listId);
@@ -1251,7 +1466,16 @@
     }
 
     wireSteps("features-steps", featScene);
-    wireSteps("trust-steps", trustScene);
+  }
+
+  function initTrustIcons() {
+    if (typeof THREE === "undefined") return;
+    if (prefersReducedMotion || isMobile()) return;
+
+    const geos = [iconCloud(), iconShield(), iconID()];
+    geos.forEach((geo, i) => {
+      createStaticIconScene("trust-canvas-" + i, geo);
+    });
   }
 
   function boot() {
@@ -1262,9 +1486,14 @@
     initLenis();
     initHero3D();
     initStats();
+    initAudienceTilt();
     initHowItWorks();
     initVideoExpand();
     initModelSteps();
+    initTrustIcons();
+    initFounders();
+    initPricing();
+    initFinalCta3D();
     initFloatingModel();
     if (!prefersReducedMotion && typeof gsap !== "undefined") {
       gsap.from(".hero-content > *", {
